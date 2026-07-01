@@ -8,6 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
   :root{
     --teal-900:#0E3B3E;
@@ -406,7 +408,7 @@
       </button>
     </nav>
     <div class="sidebar-foot">
-      Los datos se guardan de forma privada en tu sesión de Claude.
+      <span id="conn-badge">Iniciando...</span>
     </div>
   </aside>
 
@@ -577,19 +579,37 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ---------------- STORAGE (con respaldo si no corre dentro de Claude) ---------------- */
-const storage = (function(){
-  const cloudOk = typeof window.storage !== 'undefined' && window.storage && typeof window.storage.set === 'function';
-  if(cloudOk) return window.storage;
+/* ---------------- FIREBASE (base de datos compartida) ---------------- */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyD87yCFV0tJWpgXYRakuEH-nqsy9KuYs_Q",
+  authDomain: "topico-ef3dd.firebaseapp.com",
+  projectId: "topico-ef3dd",
+  storageBucket: "topico-ef3dd.firebasestorage.app",
+  messagingSenderId: "158390016360",
+  appId: "1:158390016360:web:3df906f65040f68e6a1edd",
+  measurementId: "G-P5QN289R34"
+};
+const COLLECTION = 'atenciones';
+let db = null;
+let useFirestore = false;
+try{
+  if(typeof firebase !== 'undefined'){
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+    useFirestore = true;
+  }
+}catch(e){
+  console.error('No se pudo inicializar Firebase, se usará almacenamiento local.', e);
+  useFirestore = false;
+}
 
-  console.warn('window.storage no disponible: usando localStorage como respaldo (archivo abierto fuera de Claude).');
+/* ---------------- STORAGE (Firestore compartido, con respaldo local si falla) ---------------- */
+const localBackend = (function(){
   const PREFIX = 'topico_municipal__';
   return {
     async set(key, value, shared){
-      try{
-        localStorage.setItem(PREFIX + key, value);
-        return { key, value, shared };
-      }catch(e){ console.error('storage.set fallback error', e); return null; }
+      try{ localStorage.setItem(PREFIX + key, value); return { key, value, shared }; }
+      catch(e){ console.error('storage.set fallback error', e); return null; }
     },
     async get(key, shared){
       const v = localStorage.getItem(PREFIX + key);
@@ -612,21 +632,67 @@ const storage = (function(){
   };
 })();
 
+const firestoreBackend = {
+  async set(key, value, shared){
+    const record = JSON.parse(value);
+    await db.collection(COLLECTION).doc(record.id).set(record);
+    return { key, value, shared };
+  },
+  async delete(key, shared){
+    const id = key.replace('atencion:', '');
+    await db.collection(COLLECTION).doc(id).delete();
+    return { key, deleted: true, shared };
+  },
+  // get/list no se usan en modo Firestore: los datos llegan por el listener en tiempo real (ver initData)
+  async get(){ throw new Error('No usado en modo Firestore'); },
+  async list(){ return { keys: [] }; }
+};
+
+const storage = useFirestore ? firestoreBackend : localBackend;
+
 /* ---------------- STATE ---------------- */
 let records = [];
 let editingId = null;
 let medCounter = 0;
 let chartMensual = null, chartMed = null;
-const STORAGE_SHARED = false; // datos privados por usuario
+const STORAGE_SHARED = true; // con Firestore, todos comparten la misma base de datos
 
 /* ---------------- INIT ---------------- */
 window.addEventListener('DOMContentLoaded', async () => {
   setDefaultDateTime();
   addMedRow();
-  await loadRecords();
-  renderList();
-  renderDashboard();
+  await initData();
 });
+
+async function initData(){
+  if(useFirestore){
+    updateConnBadge('Conectando a la base de datos compartida...');
+    db.collection(COLLECTION).onSnapshot(
+      (snapshot) => {
+        records = snapshot.docs.map(d => d.data());
+        records.sort((a,b) => (b.fecha + b.hora).localeCompare(a.fecha + a.hora));
+        renderList();
+        renderDashboard();
+        updateConnBadge('Conectado · base de datos compartida (Firebase)');
+      },
+      (err) => {
+        console.error('Firestore listener error', err);
+        showToast('No se pudo conectar a la base de datos compartida. Revisa las reglas de Firestore.');
+        updateConnBadge('Sin conexión a la base compartida');
+      }
+    );
+  }else{
+    await loadRecords();
+    renderList();
+    renderDashboard();
+    updateConnBadge('Modo local (solo en este navegador)');
+  }
+}
+
+function updateConnBadge(text){
+  const el = document.getElementById('conn-badge');
+  if(el) el.textContent = text;
+}
 
 function setDefaultDateTime(){
   const now = new Date();
