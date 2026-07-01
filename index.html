@@ -132,7 +132,7 @@
   /* ---------- MAIN ---------- */
   .main{
     flex:1;
-    padding:30px 40px 60px;
+    padding:20px 40px 60px;
     max-width:1180px;
   }
   .view{display:none;}
@@ -164,6 +164,19 @@
     font-size:13.5px;
     color:var(--ink-soft);
     margin-top:4px;
+  }
+  .page-head-compact{margin-bottom:14px;align-items:center;}
+  .page-head-compact h2{font-size:22px;}
+  .conn-badge-mobile{
+    display:none;
+    align-items:center;gap:6px;
+    font-size:11px;color:var(--ink-soft);
+    background:var(--teal-100);color:var(--teal-800);
+    padding:5px 10px;border-radius:20px;margin-top:8px;
+    width:fit-content;
+  }
+  .conn-badge-mobile::before{
+    content:"";width:6px;height:6px;border-radius:50%;background:var(--sage);flex-shrink:0;
   }
   /* ---------- FICHA CARD ---------- */
   .ficha-card{
@@ -242,19 +255,49 @@
     background:#fff;
   }
   .field.mono input{font-family:'JetBrains Mono',monospace;}
-  /* medicamentos table */
-  .med-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
-  .med-table th{
-    text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
-    color:var(--ink-soft);font-weight:600;padding:0 8px 8px;
+  /* --- lista de medicamentos (tarjetas) --- */
+  .med-list{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;}
+  .med-card{
+    border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    background:#FCFBF7;position:relative;
   }
-  .med-table td{padding:5px 6px;}
-  .med-table td input{
-    width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;
-    font-family:'Inter',sans-serif;font-size:13.5px;background:#FCFBF7;
+  .med-card-top{display:flex;gap:10px;align-items:center;margin-bottom:12px;}
+  .med-card-top .med-name{
+    flex:1;min-width:0;padding:9px 11px;border:1px solid var(--line);border-radius:7px;
+    font-family:'Inter',sans-serif;font-size:14px;background:#fff;color:var(--ink);
   }
-  .med-table td.qty input{font-family:'JetBrains Mono',monospace;}
-  .med-table td.rm{width:34px;text-align:center;}
+  .med-card-top .med-name:focus{outline:none;border-color:var(--teal-500);box-shadow:0 0 0 3px rgba(43,140,130,.15);}
+  .med-card-num{
+    flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--teal-100);
+    color:var(--teal-800);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .tipo-label{
+    font-size:10.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;
+    letter-spacing:.04em;margin:0 0 8px;
+  }
+  .tipo-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+  .tipo-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:7px 12px 7px 9px;border-radius:20px;border:1.5px solid var(--line);
+    background:#fff;font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;
+    color:var(--ink-soft);cursor:pointer;transition:background .15s ease, border-color .15s ease, color .15s ease, transform .1s ease;
+  }
+  .tipo-chip svg{width:15px;height:15px;flex-shrink:0;}
+  .tipo-chip:hover{border-color:var(--teal-500);color:var(--teal-800);}
+  .tipo-chip:active{transform:scale(.96);}
+  .tipo-chip.active{background:var(--teal-700);border-color:var(--teal-700);color:#fff;}
+  .med-card-bottom{display:grid;grid-template-columns:110px 1fr;gap:12px;}
+  .field-mini label{
+    display:block;font-size:10.5px;font-weight:600;color:var(--ink-soft);
+    text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;
+  }
+  .field-mini input{
+    width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;
+    font-family:'Inter',sans-serif;font-size:13.5px;background:#fff;color:var(--ink);
+  }
+  .field-mini input:focus{outline:none;border-color:var(--teal-500);box-shadow:0 0 0 3px rgba(43,140,130,.15);}
+  .field-mini.qty input{font-family:'JetBrains Mono',monospace;}
   .icon-btn{
     width:30px;height:30px;border-radius:7px;border:1px solid var(--line);
     background:#fff;color:var(--coral);cursor:pointer;
@@ -288,6 +331,24 @@
   .btn-amber{background:var(--amber);color:#fff;}
   .btn-amber:hover{background:#B26E22;}
   .hint{font-size:12px;color:var(--ink-soft);}
+  .sig-block label{
+    display:block;font-size:11.5px;font-weight:600;color:var(--ink-soft);
+    text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;
+  }
+  .sig-pad-wrap{
+    position:relative;border:1.5px dashed var(--line);border-radius:8px;
+    background:#fff;margin-bottom:8px;overflow:hidden;
+  }
+  .sig-pad{
+    display:block;width:100%;height:130px;touch-action:none;cursor:crosshair;
+  }
+  .sig-placeholder{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:#C9C2AE;
+    pointer-events:none;transition:opacity .15s ease;
+  }
+  .sig-placeholder.hidden{opacity:0;}
+  .btn-sm{padding:7px 12px;font-size:12.5px;}
   /* ---------- LIST ---------- */
   .list-card{
     background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
@@ -363,18 +424,57 @@
   .dash-foot{
     display:flex;justify-content:flex-end;margin-top:6px;
   }
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  /* ---------- RESPONSIVE ---------- */
   @media (max-width:1000px){
     .grid{grid-template-columns:repeat(2,1fr);}
     .chart-row{grid-template-columns:1fr;}
     .stat-row{grid-template-columns:repeat(2,1fr);}
   }
+  @media (max-width:760px){
+    .grid.cols-2{grid-template-columns:1fr;}
+    .med-card-bottom{grid-template-columns:1fr;}
+  }
   @media (max-width:640px){
+    body{background-size:16px 16px;}
     .app{flex-direction:column;}
-    .sidebar{width:100%;flex-direction:row;align-items:center;padding:12px;}
+    .sidebar{
+      width:100%;flex-direction:row;align-items:center;justify-content:space-between;
+      padding:12px 14px;position:sticky;top:0;z-index:30;
+    }
     .brand{display:none;}
-    .nav{flex-direction:row;padding:0;}
-    .main{padding:20px;}
+    .nav{flex-direction:row;padding:0;gap:6px;flex:1;}
+    .nav-btn{flex:1;justify-content:center;padding:9px 8px;font-size:12.5px;gap:6px;}
+    .nav-tag{display:none;}
+    .sidebar-foot{
+      display:none;
+    }
+    .main{padding:16px 14px 40px;}
     .grid{grid-template-columns:1fr;}
+    .grid.cols-2{grid-template-columns:1fr;}
+    .page-head{align-items:flex-start;}
+    .page-head h2{font-size:23px;}
+    .page-head .sub{font-size:12.5px;}
+    .ficha-body{padding:18px;}
+    .ficha-top{padding:14px 18px;flex-wrap:wrap;gap:6px;}
+    .ficha-actions{padding:14px 18px;flex-direction:column;align-items:stretch;}
+    .ficha-actions > div{flex-direction:column-reverse;width:100%;}
+    .ficha-actions .btn{width:100%;justify-content:center;}
+    .med-card{padding:12px;}
+    .list-head{flex-direction:column;align-items:stretch;}
+    .search-box{min-width:0;width:100%;}
+    table.data thead th, table.data tbody td{padding:10px 14px;font-size:12.5px;white-space:nowrap;}
+    .stat-row{grid-template-columns:repeat(2,1fr);gap:10px;}
+    .stat-card{padding:14px 16px;}
+    .stat-card .value{font-size:24px;}
+    .chart-card{padding:16px;}
+    .chart-wrap{height:220px;}
+    .page-head .btn-amber{width:100%;justify-content:center;}
+    .sig-pad{height:120px;}
+    .conn-badge-mobile{display:inline-flex;}
+  }
+  @media (max-width:400px){
+    .stat-row{grid-template-columns:1fr;}
   }
   .toast{
     position:fixed;bottom:24px;right:24px;
@@ -417,11 +517,10 @@
 
     <!-- FICHA VIEW -->
     <section class="view active" id="view-ficha">
-      <div class="page-head">
+      <div class="page-head page-head-compact">
         <div>
-          <p class="eyebrow">Atención médica · Tópico municipal</p>
-          <h2>Nueva ficha de atención</h2>
-          <p class="sub">Completa los datos del paciente y los materiales/medicamentos utilizados.</p>
+          <h2>Ficha de atención</h2>
+          <span class="conn-badge-mobile" id="conn-badge-mobile-ficha">Iniciando...</span>
         </div>
       </div>
 
@@ -470,17 +569,7 @@
 
           <div class="field-group">
             <h3>Materiales y medicamentos</h3>
-            <table class="med-table" id="med-table">
-              <thead>
-                <tr>
-                  <th style="width:32%;">Medicamento / material</th>
-                  <th style="width:14%;">Cantidad</th>
-                  <th>Descripción / indicación</th>
-                  <th class="rm"></th>
-                </tr>
-              </thead>
-              <tbody id="med-tbody"></tbody>
-            </table>
+            <div class="med-list" id="med-tbody"></div>
             <button type="button" class="add-row-btn" onclick="addMedRow()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               Agregar medicamento
@@ -497,6 +586,35 @@
               <div class="field">
                 <label for="f-cargo">Cargo / profesión</label>
                 <input type="text" id="f-cargo" placeholder="Ej. Médico general, Enfermera(o)">
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group" style="margin-bottom:4px;">
+            <h3>Firmas</h3>
+            <p class="hint" style="margin:0 0 12px;">Firma con el dedo (en celular/tablet) o con el mouse. Ya no se necesita papel.</p>
+            <div class="grid cols-2">
+              <div class="sig-block">
+                <label>Firma del paciente / responsable</label>
+                <div class="sig-pad-wrap">
+                  <canvas id="sig-paciente" class="sig-pad"></canvas>
+                  <span class="sig-placeholder" id="sig-paciente-ph">Firmar aquí</span>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="sigPaciente.clear()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+                  Limpiar firma
+                </button>
+              </div>
+              <div class="sig-block">
+                <label>Firma del personal de salud</label>
+                <div class="sig-pad-wrap">
+                  <canvas id="sig-personal" class="sig-pad"></canvas>
+                  <span class="sig-placeholder" id="sig-personal-ph">Firmar aquí</span>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="sigPersonal.clear()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+                  Limpiar firma
+                </button>
               </div>
             </div>
           </div>
@@ -567,7 +685,7 @@
         </div>
         <div class="chart-card">
           <h4>Medicamentos utilizados</h4>
-          <p class="cap">Top 8 por cantidad total dispensada</p>
+          <p class="cap">Distribución por cantidad dispensada (top 6 + otros)</p>
           <div class="chart-wrap"><canvas id="chart-med"></canvas></div>
         </div>
       </div>
@@ -650,6 +768,129 @@ const firestoreBackend = {
 
 const storage = useFirestore ? firestoreBackend : localBackend;
 
+/* ---------------- FIRMA DIGITAL ---------------- */
+function initSignaturePad(canvasId, placeholderId){
+  const canvas = document.getElementById(canvasId);
+  const placeholder = document.getElementById(placeholderId);
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let hasSignature = false;
+  let points = [];
+  let sized = false;
+
+  const PEN_COLOR = '#152A6B';   // azul tinta de lapicero
+  const PEN_WIDTH = 2.4;
+
+  function setupContext(){
+    ctx.lineWidth = PEN_WIDTH;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = PEN_COLOR;
+    ctx.fillStyle = PEN_COLOR;
+  }
+
+  // Ajusta la resolución del canvas UNA sola vez (evita que se borre o desalinee mientras se firma)
+  function sizeCanvas(){
+    const rect = canvas.getBoundingClientRect();
+    if(rect.width === 0 || rect.height === 0) return false;
+    const ratio = window.devicePixelRatio || 1;
+    canvas.width = rect.width * ratio;
+    canvas.height = rect.height * ratio;
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    setupContext();
+    sized = true;
+    return true;
+  }
+  // Reintenta el ajuste de tamaño hasta que el contenedor tenga medidas reales (por si el panel aún no es visible)
+  function ensureSized(){
+    if(sized) return;
+    if(!sizeCanvas()) requestAnimationFrame(ensureSized);
+  }
+  ensureSized();
+
+  function getPos(e){
+    const rect = canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }
+
+  function drawDot(p){
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, PEN_WIDTH / 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Suaviza el trazo dibujando curvas entre puntos medios (evita el efecto de línea quebrada/"a saltos")
+  function drawSmoothSegment(){
+    const len = points.length;
+    if(len < 3) return;
+    const p0 = points[len - 3], p1 = points[len - 2], p2 = points[len - 1];
+    const mid1 = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
+    const mid2 = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+    ctx.beginPath();
+    ctx.moveTo(mid1.x, mid1.y);
+    ctx.quadraticCurveTo(p1.x, p1.y, mid2.x, mid2.y);
+    ctx.stroke();
+  }
+
+  function start(e){
+    if(!sized) sizeCanvas();
+    drawing = true;
+    const p = getPos(e);
+    points = [p];
+    drawDot(p);
+    if(!hasSignature){ hasSignature = true; if(placeholder) placeholder.classList.add('hidden'); }
+    if(canvas.setPointerCapture && e.pointerId !== undefined){
+      try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+    }
+    e.preventDefault();
+  }
+  function move(e){
+    if(!drawing) return;
+    points.push(getPos(e));
+    drawSmoothSegment();
+    e.preventDefault();
+  }
+  function end(){
+    if(!drawing) return;
+    drawing = false;
+    points = [];
+  }
+
+  canvas.style.touchAction = 'none';
+  canvas.addEventListener('pointerdown', start);
+  canvas.addEventListener('pointermove', move);
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+  window.addEventListener('pointerup', end);
+  canvas.addEventListener('pointerleave', () => { if(drawing) end(); });
+
+  return {
+    clear(){
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width || canvas.width, rect.height || canvas.height);
+      hasSignature = false;
+      points = [];
+      if(placeholder) placeholder.classList.remove('hidden');
+    },
+    isEmpty(){ return !hasSignature; },
+    toDataURL(){ return hasSignature ? canvas.toDataURL('image/png') : null; },
+    fromDataURL(url){
+      if(!url){ this.clear(); return; }
+      if(!sized) sizeCanvas();
+      const rect = canvas.getBoundingClientRect();
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        hasSignature = true;
+        if(placeholder) placeholder.classList.add('hidden');
+      };
+      img.src = url;
+    }
+  };
+}
+let sigPaciente, sigPersonal;
+
 /* ---------------- STATE ---------------- */
 let records = [];
 let editingId = null;
@@ -661,6 +902,8 @@ const STORAGE_SHARED = true; // con Firestore, todos comparten la misma base de 
 window.addEventListener('DOMContentLoaded', async () => {
   setDefaultDateTime();
   addMedRow();
+  sigPaciente = initSignaturePad('sig-paciente', 'sig-paciente-ph');
+  sigPersonal = initSignaturePad('sig-personal', 'sig-personal-ph');
   await initData();
 });
 
@@ -692,6 +935,8 @@ async function initData(){
 function updateConnBadge(text){
   const el = document.getElementById('conn-badge');
   if(el) el.textContent = text;
+  const elm = document.getElementById('conn-badge-mobile-ficha');
+  if(elm) elm.textContent = text;
 }
 
 function setDefaultDateTime(){
@@ -710,35 +955,86 @@ function switchView(view){
 }
 
 /* ---------------- MED ROWS ---------------- */
+const TIPO_OPCIONES = [
+  { val:'Tableta', icon:'<circle cx="12" cy="12" r="8"></circle><line x1="12" y1="4" x2="12" y2="20"></line>' },
+  { val:'Cápsula', icon:'<rect x="2" y="8" width="20" height="8" rx="4"></rect><line x1="12" y1="8" x2="12" y2="16"></line>' },
+  { val:'Ampolla', icon:'<path d="M10 2h4"></path><path d="M11 2v6l-4 4.5V19a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6.5L13 8V2"></path><line x1="8.5" y1="15" x2="15.5" y2="15"></line>' },
+  { val:'Jarabe', icon:'<path d="M9 2h6v4l2 3v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9l2-3z"></path><line x1="7" y1="13" x2="17" y2="13"></line>' },
+  { val:'Crema', icon:'<path d="M7 3h6l2 4v13a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V7z"></path><line x1="7" y1="9" x2="15" y2="9"></line>' },
+  { val:'Otro', icon:'<circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle>' }
+];
+const TIPO_VALORES = TIPO_OPCIONES.map(t => t.val);
+
 function addMedRow(data){
   medCounter++;
   const id = 'med-'+medCounter;
-  const tbody = document.getElementById('med-tbody');
-  const tr = document.createElement('tr');
-  tr.id = id;
-  tr.innerHTML = `
-    <td><input type="text" class="med-name" placeholder="Ej. Paracetamol 500mg" value="${data?.medicamento ? escapeHtml(data.medicamento) : ''}"></td>
-    <td class="qty"><input type="number" class="med-qty" min="0" step="1" placeholder="0" value="${data?.cantidad ?? ''}"></td>
-    <td><input type="text" class="med-desc" placeholder="Ej. 1 tableta cada 8 horas" value="${data?.descripcion ? escapeHtml(data.descripcion) : ''}"></td>
-    <td class="rm"><button type="button" class="icon-btn" onclick="removeMedRow('${id}')" title="Eliminar fila">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-    </button></td>`;
-  tbody.appendChild(tr);
+  const list = document.getElementById('med-tbody');
+  const card = document.createElement('div');
+  card.className = 'med-card';
+  card.id = id;
+  const tipoActual = data?.tipo && TIPO_VALORES.includes(data.tipo) ? data.tipo : 'Tableta';
+  card.dataset.tipo = tipoActual;
+  const posicion = list.children.length + 1;
+
+  const chips = TIPO_OPCIONES.map(t => `
+    <button type="button" class="tipo-chip${t.val===tipoActual?' active':''}" data-val="${t.val}" onclick="selectTipo('${id}', '${t.val}', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${t.icon}</svg>
+      ${t.val}
+    </button>`).join('');
+
+  card.innerHTML = `
+    <div class="med-card-top">
+      <span class="med-card-num">${posicion}</span>
+      <input type="text" class="med-name" placeholder="Ej. Paracetamol 500mg" value="${data?.medicamento ? escapeHtml(data.medicamento) : ''}">
+      <button type="button" class="icon-btn" onclick="removeMedRow('${id}')" title="Eliminar medicamento">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <p class="tipo-label">Tipo</p>
+    <div class="tipo-chips">${chips}</div>
+    <div class="med-card-bottom">
+      <div class="field-mini qty">
+        <label>Cantidad</label>
+        <input type="number" class="med-qty" min="0" step="1" placeholder="0" value="${data?.cantidad ?? ''}">
+      </div>
+      <div class="field-mini">
+        <label>Indicación</label>
+        <input type="text" class="med-desc" placeholder="Ej. cada 8 horas" value="${data?.descripcion ? escapeHtml(data.descripcion) : ''}">
+      </div>
+    </div>`;
+  list.appendChild(card);
 }
+
+function selectTipo(cardId, value, btnEl){
+  const card = document.getElementById(cardId);
+  if(!card) return;
+  card.dataset.tipo = value;
+  card.querySelectorAll('.tipo-chip').forEach(b => b.classList.toggle('active', b === btnEl));
+}
+
+function renumberMedCards(){
+  document.querySelectorAll('#med-tbody .med-card').forEach((card, i) => {
+    const num = card.querySelector('.med-card-num');
+    if(num) num.textContent = i + 1;
+  });
+}
+
 function removeMedRow(id){
-  const tbody = document.getElementById('med-tbody');
-  if(tbody.children.length <= 1){ showToast('Debe quedar al menos una fila de medicamento.'); return; }
+  const list = document.getElementById('med-tbody');
+  if(list.children.length <= 1){ showToast('Debe quedar al menos un medicamento.'); return; }
   document.getElementById(id).remove();
+  renumberMedCards();
 }
 function collectMeds(){
-  const rows = document.querySelectorAll('#med-tbody tr');
+  const cards = document.querySelectorAll('#med-tbody .med-card');
   const meds = [];
-  rows.forEach(r => {
-    const name = r.querySelector('.med-name').value.trim();
-    const qty = r.querySelector('.med-qty').value;
-    const desc = r.querySelector('.med-desc').value.trim();
+  cards.forEach(c => {
+    const name = c.querySelector('.med-name').value.trim();
+    const qty = c.querySelector('.med-qty').value;
+    const desc = c.querySelector('.med-desc').value.trim();
+    const tipo = c.dataset.tipo || 'Tableta';
     if(name || qty || desc){
-      meds.push({ medicamento:name, cantidad: qty ? Number(qty) : 0, descripcion:desc });
+      meds.push({ medicamento:name, tipo, cantidad: qty ? Number(qty) : 0, descripcion:desc });
     }
   });
   return meds;
@@ -763,6 +1059,8 @@ document.getElementById('ficha-form').addEventListener('submit', async (e) => {
     medicamentos: collectMeds(),
     personal: document.getElementById('f-personal').value.trim(),
     cargo: document.getElementById('f-cargo').value.trim(),
+    firmaPaciente: sigPaciente.toDataURL(),
+    firmaPersonal: sigPersonal.toDataURL(),
     creadoEn: editingId ? (records.find(r=>r.id===editingId)?.creadoEn || new Date().toISOString()) : new Date().toISOString()
   };
   if(!record.personal){ showToast('Ingresa el personal de salud que atiende.'); return; }
@@ -790,6 +1088,8 @@ function resetForm(){
   document.getElementById('med-tbody').innerHTML = '';
   setDefaultDateTime();
   addMedRow();
+  if(sigPaciente) sigPaciente.clear();
+  if(sigPersonal) sigPersonal.clear();
   document.getElementById('folio-preview').textContent = '—';
   document.getElementById('edit-hint').textContent = 'Registrando una nueva atención.';
 }
@@ -834,6 +1134,7 @@ function renderList(){
       <td>${escapeHtml(r.nombre)}</td>
       <td>${r.medicamentos.length} ítem${r.medicamentos.length===1?'':'s'}</td>
       <td>${escapeHtml(r.personal)}</td>
+      <td>${(r.firmaPaciente && r.firmaPersonal) ? '<span class="pill" style="background:#E1EEE4;color:#2F6B45;">Firmado</span>' : '<span class="pill" style="background:var(--coral-soft);color:var(--coral);">Sin firma</span>'}</td>
       <td>
         <div class="row-actions">
           <button title="Editar" onclick="editRecord('${r.id}')">
@@ -849,10 +1150,10 @@ function renderList(){
       </td>
     </tr>`).join('');
 
-  wrap.innerHTML = `<table class="data">
-    <thead><tr><th>Fecha / hora</th><th>DNI</th><th>Paciente</th><th>Medicamentos</th><th>Atendido por</th><th></th></tr></thead>
+  wrap.innerHTML = `<div class="table-scroll"><table class="data">
+    <thead><tr><th>Fecha / hora</th><th>DNI</th><th>Paciente</th><th>Medicamentos</th><th>Atendido por</th><th>Firma</th><th></th></tr></thead>
     <tbody>${rows}</tbody>
-  </table>`;
+  </table></div>`;
 }
 
 function editRecord(id){
@@ -869,6 +1170,8 @@ function editRecord(id){
   document.getElementById('f-cargo').value = r.cargo || '';
   document.getElementById('med-tbody').innerHTML = '';
   (r.medicamentos.length ? r.medicamentos : [{}]).forEach(m => addMedRow(m));
+  if(sigPaciente) sigPaciente.fromDataURL(r.firmaPaciente || null);
+  if(sigPersonal) sigPersonal.fromDataURL(r.firmaPersonal || null);
   document.getElementById('folio-preview').textContent = r.id.slice(-6).toUpperCase();
   document.getElementById('edit-hint').textContent = 'Editando ficha existente — se sobrescribirá al guardar.';
   switchView('ficha');
@@ -891,19 +1194,20 @@ async function deleteRecord(id){
 
 /* ---------------- DASHBOARD ---------------- */
 function renderDashboard(){
+ try{
   document.getElementById('st-total').textContent = records.length;
 
   const now = new Date();
   const curMonthKey = now.toISOString().slice(0,7);
-  const monthCount = records.filter(r => r.fecha.slice(0,7) === curMonthKey).length;
+  const monthCount = records.filter(r => (r.fecha || '').slice(0,7) === curMonthKey).length;
   document.getElementById('st-mes').textContent = monthCount;
 
-  const uniquePatients = new Set(records.map(r => r.dni)).size;
+  const uniquePatients = new Set(records.map(r => r.dni || '')).size;
   document.getElementById('st-pacientes').textContent = uniquePatients;
 
   const medTotals = {};
-  records.forEach(r => r.medicamentos.forEach(m => {
-    if(!m.medicamento) return;
+  records.forEach(r => (r.medicamentos || []).forEach(m => {
+    if(!m || !m.medicamento) return;
     medTotals[m.medicamento] = (medTotals[m.medicamento] || 0) + (Number(m.cantidad) || 0);
   }));
   const sortedMeds = Object.entries(medTotals).sort((a,b) => b[1]-a[1]);
@@ -919,62 +1223,75 @@ function renderDashboard(){
     const [y,mo] = m.split('-');
     return new Date(y,mo-1,1).toLocaleDateString('es-PE',{month:'short'}).replace('.','') + ' ' + y.slice(2);
   });
-  const monthData = months.map(m => records.filter(r => r.fecha.slice(0,7) === m).length);
+  const monthData = months.map(m => records.filter(r => (r.fecha || '').slice(0,7) === m).length);
 
-  const ctx1 = document.getElementById('chart-mensual').getContext('2d');
-  if(chartMensual) chartMensual.destroy();
-  chartMensual = new Chart(ctx1, {
-    type:'bar',
-    data:{
-      labels: monthLabels,
-      datasets:[{
-        label:'Atenciones',
-        data: monthData,
-        backgroundColor:'#146C6E',
-        borderRadius:5,
-        maxBarThickness:34
-      }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales:{
-        y:{ beginAtZero:true, ticks:{precision:0, color:'#5B6864'}, grid:{color:'#EDE9DC'} },
-        x:{ ticks:{color:'#5B6864'}, grid:{display:false} }
+  const canvasMensual = document.getElementById('chart-mensual');
+  if(canvasMensual){
+    const ctx1 = canvasMensual.getContext('2d');
+    if(chartMensual) chartMensual.destroy();
+    chartMensual = new Chart(ctx1, {
+      type:'bar',
+      data:{
+        labels: monthLabels,
+        datasets:[{
+          label:'Atenciones',
+          data: monthData,
+          backgroundColor:'#146C6E',
+          borderRadius:5,
+          maxBarThickness:34
+        }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false} },
+        scales:{
+          y:{ beginAtZero:true, ticks:{precision:0, color:'#5B6864'}, grid:{color:'#EDE9DC'} },
+          x:{ ticks:{color:'#5B6864'}, grid:{display:false} }
+        }
       }
-    }
-  });
-
-  /* --- medication chart: top 8 --- */
-  const top8 = sortedMeds.slice(0,8);
-  const ctx2 = document.getElementById('chart-med').getContext('2d');
-  if(chartMed) chartMed.destroy();
-  chartMed = new Chart(ctx2, {
-    type:'bar',
-    data:{
-      labels: top8.map(m => m[0]),
-      datasets:[{
-        label:'Cantidad',
-        data: top8.map(m => m[1]),
-        backgroundColor:'#C97F2E',
-        borderRadius:5,
-        maxBarThickness:22
-      }]
-    },
-    options:{
-      indexAxis:'y',
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales:{
-        x:{ beginAtZero:true, ticks:{precision:0, color:'#5B6864'}, grid:{color:'#EDE9DC'} },
-        y:{ ticks:{color:'#5B6864', font:{size:11.5}}, grid:{display:false} }
-      }
-    }
-  });
-
-  if(top8.length === 0){
-    document.getElementById('chart-med').parentElement.insertAdjacentHTML('beforeend', '');
+    });
   }
+
+  /* --- medication chart: circular (dona) --- */
+  const top6 = sortedMeds.slice(0,6);
+  const otrosTotal = sortedMeds.slice(6).reduce((s,m) => s + m[1], 0);
+  const donutLabels = top6.map(m => m[0]);
+  const donutData = top6.map(m => m[1]);
+  if(otrosTotal > 0){ donutLabels.push('Otros'); donutData.push(otrosTotal); }
+  const donutColors = ['#146C6E','#C97F2E','#8FA893','#B84438','#2B8C82','#D9C27A','#5B6864'];
+
+  const canvasMed = document.getElementById('chart-med');
+  if(canvasMed){
+    const ctx2 = canvasMed.getContext('2d');
+    if(chartMed) chartMed.destroy();
+    chartMed = new Chart(ctx2, {
+      type:'doughnut',
+      data:{
+        labels: donutLabels,
+        datasets:[{
+          data: donutData,
+          backgroundColor: donutColors.slice(0, donutLabels.length),
+          borderColor:'#FCFBF7',
+          borderWidth:3,
+          hoverOffset:6
+        }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        cutout:'62%',
+        plugins:{
+          legend:{
+            position:'bottom',
+            labels:{ color:'#5B6864', font:{size:11.5}, padding:12, boxWidth:11, usePointStyle:true, pointStyle:'circle' }
+          }
+        }
+      }
+    });
+  }
+ }catch(err){
+   console.error('Error en renderDashboard:', err);
+   showToast('Error al cargar el dashboard: ' + (err && err.message ? err.message : 'revisa la consola (F12).'));
+ }
 }
 
 /* ---------------- EXCEL: FICHA INDIVIDUAL ---------------- */
@@ -1045,11 +1362,8 @@ async function downloadFicha(id){
   labelValue(row, 'Domicilio', r.domicilio, 1); row++;
 
   sectionRow(row, 'Materiales y medicamentos', `A${row}:D${row}`); row++;
-  const th = ['Medicamento / material','Cantidad','Descripción / indicación'];
-  ws.mergeCells(`A${row}:A${row}`);
-  ws.mergeCells(`B${row}:B${row}`);
-  ws.mergeCells(`C${row}:D${row}`);
-  ['A','B','C'].forEach((col,i) => {
+  const th = ['Medicamento / material','Tipo','Cant.','Indicación'];
+  ['A','B','C','D'].forEach((col,i) => {
     const c = ws.getCell(`${col}${row}`);
     c.value = th[i];
     c.font = { bold:true, size:9.5, color:{argb:'FFFFFFFF'} };
@@ -1057,13 +1371,13 @@ async function downloadFicha(id){
     c.alignment = { vertical:'middle', indent:1 };
   });
   row++;
-  const medList = r.medicamentos.length ? r.medicamentos : [{medicamento:'—',cantidad:'',descripcion:''}];
+  const medList = r.medicamentos.length ? r.medicamentos : [{medicamento:'—',tipo:'',cantidad:'',descripcion:''}];
   medList.forEach(m => {
-    ws.mergeCells(`C${row}:D${row}`);
     const c1 = ws.getCell(`A${row}`); c1.value = m.medicamento || '—';
-    const c2 = ws.getCell(`B${row}`); c2.value = m.cantidad || 0; c2.alignment = {horizontal:'center'};
-    const c3 = ws.getCell(`C${row}`); c3.value = m.descripcion || '';
-    [c1,c2,c3].forEach(c => {
+    const c2 = ws.getCell(`B${row}`); c2.value = m.tipo || '—'; c2.alignment = {horizontal:'center'};
+    const c3 = ws.getCell(`C${row}`); c3.value = m.cantidad || 0; c3.alignment = {horizontal:'center'};
+    const c4 = ws.getCell(`D${row}`); c4.value = m.descripcion || '';
+    [c1,c2,c3,c4].forEach(c => {
       c.font = { size:10.5 };
       c.border = { top:{style:'thin',color:{argb:line}}, bottom:{style:'thin',color:{argb:line}}, left:{style:'thin',color:{argb:line}}, right:{style:'thin',color:{argb:line}} };
       c.alignment = { ...(c.alignment||{}), vertical:'middle', wrapText:true };
@@ -1076,12 +1390,27 @@ async function downloadFicha(id){
   labelValue(row, 'Atendido por', r.personal, 1);
   labelValue(row, 'Cargo', r.cargo, 3); row++;
 
+  row++;
+  sectionRow(row, 'Firmas', `A${row}:D${row}`); row++;
+  const sigImgRow = row;
+  ws.getRow(sigImgRow).height = 60;
+  ws.getRow(sigImgRow+1).height = 60;
+  if(r.firmaPaciente){
+    const b64 = r.firmaPaciente.split(',')[1];
+    const imgId1 = wb.addImage({ base64: b64, extension: 'png' });
+    ws.addImage(imgId1, { tl: { col: 0.1, row: sigImgRow - 1 + 0.1 }, ext: { width: 190, height: 75 } });
+  }
+  if(r.firmaPersonal){
+    const b64 = r.firmaPersonal.split(',')[1];
+    const imgId2 = wb.addImage({ base64: b64, extension: 'png' });
+    ws.addImage(imgId2, { tl: { col: 2.1, row: sigImgRow - 1 + 0.1 }, ext: { width: 190, height: 75 } });
+  }
   row += 2;
   ws.mergeCells(`A${row}:B${row}`);
-  ws.getCell(`A${row}`).value = '_____________________________';
+  ws.getCell(`A${row}`).value = r.firmaPaciente ? '✓ Firmado digitalmente' : '_____________________________ (sin firmar)';
   ws.getCell(`A${row}`).alignment = {horizontal:'center'};
   ws.mergeCells(`C${row}:D${row}`);
-  ws.getCell(`C${row}`).value = '_____________________________';
+  ws.getCell(`C${row}`).value = r.firmaPersonal ? '✓ Firmado digitalmente' : '_____________________________ (sin firmar)';
   ws.getCell(`C${row}`).alignment = {horizontal:'center'};
   row++;
   ws.mergeCells(`A${row}:B${row}`);
@@ -1119,6 +1448,8 @@ async function downloadDatabase(){
     { header:'Medicamentos (resumen)', key:'medresumen', width:40 },
     { header:'Atendido por', key:'personal', width:24 },
     { header:'Cargo', key:'cargo', width:20 },
+    { header:'Firma paciente', key:'firmap', width:15 },
+    { header:'Firma personal', key:'firmas', width:15 },
   ];
   styleHeaderRow(ws1);
   records.forEach(r => {
@@ -1130,9 +1461,11 @@ async function downloadDatabase(){
       telefono: r.telefono,
       domicilio: r.domicilio,
       nmed: r.medicamentos.length,
-      medresumen: r.medicamentos.map(m => `${m.medicamento} (${m.cantidad})`).join('; '),
+      medresumen: r.medicamentos.map(m => `${m.medicamento}${m.tipo ? ' ('+m.tipo+')' : ''} x${m.cantidad}`).join('; '),
       personal: r.personal,
-      cargo: r.cargo
+      cargo: r.cargo,
+      firmap: r.firmaPaciente ? 'Sí' : 'No',
+      firmas: r.firmaPersonal ? 'Sí' : 'No'
     });
   });
   zebraStripe(ws1);
@@ -1144,8 +1477,9 @@ async function downloadDatabase(){
     { header:'DNI paciente', key:'dni', width:13 },
     { header:'Paciente', key:'nombre', width:28 },
     { header:'Medicamento', key:'med', width:26 },
+    { header:'Tipo', key:'tipo', width:14 },
     { header:'Cantidad', key:'cant', width:10 },
-    { header:'Descripción', key:'desc', width:34 },
+    { header:'Indicación', key:'desc', width:34 },
     { header:'Atendido por', key:'personal', width:24 },
   ];
   styleHeaderRow(ws2);
@@ -1156,6 +1490,7 @@ async function downloadDatabase(){
         dni: r.dni,
         nombre: r.nombre,
         med: m.medicamento,
+        tipo: m.tipo || '—',
         cant: m.cantidad,
         desc: m.descripcion,
         personal: r.personal
