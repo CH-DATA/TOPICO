@@ -6,7 +6,8 @@
 <title>Tópico Municipal · Registro de Atenciones</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"
+        onerror="var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js'; document.head.appendChild(s);"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -1195,6 +1196,11 @@ async function deleteRecord(id){
 /* ---------------- DASHBOARD ---------------- */
 function renderDashboard(){
  try{
+  if(typeof Chart === 'undefined'){
+    showToast('No se pudo cargar la librería de gráficos (Chart.js). Revisa tu conexión a internet y recarga la página.');
+    return;
+  }
+
   document.getElementById('st-total').textContent = records.length;
 
   const now = new Date();
