@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tópico Municipal · Registro de Atenciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+  :root{
+    --teal-900:#0E3B3E;
+    --teal-800:#124B4E;
+    --teal-700:#146C6E;
+    --teal-500:#2B8C82;
+    --teal-100:#E4ECE8;
+    --paper:#F6F3EA;
+    --card:#FFFFFF;
+    --ink:#1D2B27;
+    --ink-soft:#5B6864;
+    --amber:#C97F2E;
+    --amber-soft:#F2E1C8;
+    --coral:#B84438;
+    --coral-soft:#F4DEDA;
+    --sage:#8FA893;
+    --line:#DCD5C3;
+    --shadow: 0 1px 2px rgba(14,59,62,.06), 0 8px 24px -12px rgba(14,59,62,.18);
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(14,59,62,.05) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+  .app{
+    display:flex;
+    min-height:100vh;
+  }
+  /* ---------- SIDEBAR ---------- */
+  .sidebar{
+    width:230px;
+    flex-shrink:0;
+    background:linear-gradient(180deg,var(--teal-900),var(--teal-800));
+    color:#EAF3EF;
+    display:flex;
+    flex-direction:column;
+    padding:22px 0 18px;
+    position:relative;
+  }
+  .brand{
+    padding:0 20px 20px;
+    border-bottom:1px solid rgba(234,243,239,.14);
+    margin-bottom:18px;
+  }
+  .brand .seal{
+    width:38px;height:38px;border-radius:50%;
+    border:1.5px solid rgba(234,243,239,.55);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-weight:600;font-size:15px;
+    margin-bottom:10px;color:#EAF3EF;
+  }
+  .brand h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:17px;
+    line-height:1.25;
+    margin:0 0 4px;
+    letter-spacing:.2px;
+  }
+  .brand p{
+    margin:0;
+    font-size:11px;
+    color:rgba(234,243,239,.6);
+    text-transform:uppercase;
+    letter-spacing:.09em;
+  }
+  .nav{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    padding:0 12px;
+  }
+  .nav-btn{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    width:100%;
+    padding:11px 14px;
+    background:transparent;
+    border:none;
+    border-radius:8px;
+    color:rgba(234,243,239,.72);
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+    text-align:left;
+    transition:background .15s ease, color .15s ease;
+    position:relative;
+  }
+  .nav-btn svg{flex-shrink:0;opacity:.85;}
+  .nav-btn:hover{background:rgba(234,243,239,.08);color:#EAF3EF;}
+  .nav-btn.active{
+    background:var(--paper);
+    color:var(--teal-900);
+    font-weight:600;
+  }
+  .nav-btn.active svg{opacity:1;stroke:var(--teal-900);}
+  .nav-tag{
+    margin-left:auto;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    opacity:.55;
+  }
+  .sidebar-foot{
+    margin-top:auto;
+    padding:14px 20px 0;
+    border-top:1px solid rgba(234,243,239,.14);
+    font-size:11px;
+    color:rgba(234,243,239,.45);
+    line-height:1.5;
+  }
+  /* ---------- MAIN ---------- */
+  .main{
+    flex:1;
+    padding:30px 40px 60px;
+    max-width:1180px;
+  }
+  .view{display:none;}
+  .view.active{display:block;}
+  .page-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .page-head .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--teal-700);
+    margin:0 0 6px;
+  }
+  .page-head h2{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:28px;
+    margin:0;
+    color:var(--teal-900);
+  }
+  .page-head .sub{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin-top:4px;
+  }
+  /* ---------- FICHA CARD ---------- */
+  .ficha-card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    border:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+    margin-bottom:26px;
+  }
+  .ficha-card::before{
+    content:"";
+    position:absolute;top:0;left:0;right:0;height:5px;
+    background:repeating-linear-gradient(90deg,var(--teal-700) 0 10px, transparent 10px 18px);
+    opacity:.5;
+  }
+  .ficha-top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 26px;
+    border-bottom:1px dashed var(--line);
+    background:var(--teal-100);
+  }
+  .ficha-top .folio{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--teal-800);
+  }
+  .ficha-top .folio b{color:var(--amber);}
+  .ficha-body{padding:26px;}
+  .field-group{margin-bottom:22px;}
+  .field-group h3{
+    font-family:'Fraunces',serif;
+    font-size:15.5px;
+    font-weight:600;
+    color:var(--teal-800);
+    margin:0 0 12px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .field-group h3::before{
+    content:"";
+    width:6px;height:6px;border-radius:50%;
+    background:var(--amber);
+    display:inline-block;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+  }
+  .grid.cols-2{grid-template-columns:repeat(2,1fr);}
+  .field label{
+    display:block;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:6px;
+  }
+  .field input, .field select{
+    width:100%;
+    padding:9px 11px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    background:#FCFBF7;
+    color:var(--ink);
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .field input:focus, .field select:focus{
+    outline:none;
+    border-color:var(--teal-500);
+    box-shadow:0 0 0 3px rgba(43,140,130,.15);
+    background:#fff;
+  }
+  .field.mono input{font-family:'JetBrains Mono',monospace;}
+  /* medicamentos table */
+  .med-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+  .med-table th{
+    text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+    color:var(--ink-soft);font-weight:600;padding:0 8px 8px;
+  }
+  .med-table td{padding:5px 6px;}
+  .med-table td input{
+    width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;
+    font-family:'Inter',sans-serif;font-size:13.5px;background:#FCFBF7;
+  }
+  .med-table td.qty input{font-family:'JetBrains Mono',monospace;}
+  .med-table td.rm{width:34px;text-align:center;}
+  .icon-btn{
+    width:30px;height:30px;border-radius:7px;border:1px solid var(--line);
+    background:#fff;color:var(--coral);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .15s;
+  }
+  .icon-btn:hover{background:var(--coral-soft);}
+  .add-row-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:transparent;border:1px dashed var(--teal-500);
+    color:var(--teal-700);font-size:13px;font-weight:600;
+    padding:8px 14px;border-radius:7px;cursor:pointer;margin-top:2px;
+  }
+  .add-row-btn:hover{background:var(--teal-100);}
+  .ficha-actions{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 26px;border-top:1px solid var(--line);background:#FBFAF6;
+    gap:12px;flex-wrap:wrap;
+  }
+  .btn{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;
+    padding:10px 18px;border-radius:8px;border:none;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:transform .1s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--teal-700);color:#fff;}
+  .btn-primary:hover{background:var(--teal-800);}
+  .btn-ghost{background:transparent;color:var(--teal-800);border:1px solid var(--line);}
+  .btn-ghost:hover{background:var(--teal-100);}
+  .btn-amber{background:var(--amber);color:#fff;}
+  .btn-amber:hover{background:#B26E22;}
+  .hint{font-size:12px;color:var(--ink-soft);}
+  /* ---------- LIST ---------- */
+  .list-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;
+  }
+  .list-head{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:16px 22px;border-bottom:1px solid var(--line);gap:12px;flex-wrap:wrap;
+  }
+  .list-head h3{
+    font-family:'Fraunces',serif;font-size:16.5px;margin:0;color:var(--teal-900);font-weight:600;
+  }
+  .search-box{
+    display:flex;align-items:center;gap:8px;
+    border:1px solid var(--line);border-radius:7px;padding:7px 11px;background:#FCFBF7;min-width:230px;
+  }
+  .search-box input{border:none;background:transparent;outline:none;font-size:13.5px;width:100%;font-family:'Inter',sans-serif;}
+  table.data{width:100%;border-collapse:collapse;}
+  table.data thead th{
+    text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+    color:var(--ink-soft);font-weight:600;padding:10px 22px;background:var(--teal-100);
+    position:sticky;top:0;
+  }
+  table.data tbody td{
+    padding:12px 22px;border-top:1px solid var(--line);font-size:13.5px;vertical-align:middle;
+  }
+  table.data tbody tr:hover{background:#FBFAF5;}
+  .pill{
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    background:var(--teal-100);color:var(--teal-800);padding:3px 8px;border-radius:5px;
+  }
+  .row-actions{display:flex;gap:6px;}
+  .row-actions button{
+    border:1px solid var(--line);background:#fff;border-radius:6px;
+    width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .row-actions button:hover{background:var(--teal-100);}
+  .row-actions button.danger:hover{background:var(--coral-soft);color:var(--coral);}
+  .empty-state{
+    padding:50px 20px;text-align:center;color:var(--ink-soft);
+  }
+  .empty-state svg{opacity:.35;margin-bottom:10px;}
+  .empty-state p{margin:0;font-size:13.5px;}
+  /* ---------- DASHBOARD ---------- */
+  .stat-row{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;
+  }
+  .stat-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;box-shadow:var(--shadow);
+  }
+  .stat-card .label{
+    font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);
+    font-weight:600;margin-bottom:8px;
+  }
+  .stat-card .value{
+    font-family:'Fraunces',serif;font-size:30px;font-weight:600;color:var(--teal-900);
+    display:flex;align-items:baseline;gap:6px;
+  }
+  .stat-card .value span{font-size:13px;font-family:'Inter',sans-serif;color:var(--sage);font-weight:600;}
+  .chart-row{
+    display:grid;grid-template-columns:1.3fr 1fr;gap:18px;margin-bottom:20px;
+  }
+  .chart-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 22px;box-shadow:var(--shadow);
+  }
+  .chart-card h4{
+    font-family:'Fraunces',serif;font-size:15.5px;margin:0 0 4px;color:var(--teal-900);font-weight:600;
+  }
+  .chart-card .cap{font-size:12px;color:var(--ink-soft);margin-bottom:14px;}
+  .chart-wrap{position:relative;height:260px;}
+  .dash-foot{
+    display:flex;justify-content:flex-end;margin-top:6px;
+  }
+  @media (max-width:1000px){
+    .grid{grid-template-columns:repeat(2,1fr);}
+    .chart-row{grid-template-columns:1fr;}
+    .stat-row{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (max-width:640px){
+    .app{flex-direction:column;}
+    .sidebar{width:100%;flex-direction:row;align-items:center;padding:12px;}
+    .brand{display:none;}
+    .nav{flex-direction:row;padding:0;}
+    .main{padding:20px;}
+    .grid{grid-template-columns:1fr;}
+  }
+  .toast{
+    position:fixed;bottom:24px;right:24px;
+    background:var(--teal-900);color:#fff;padding:12px 18px;border-radius:8px;
+    font-size:13.5px;box-shadow:var(--shadow);
+    display:flex;align-items:center;gap:10px;
+    transform:translateY(20px);opacity:0;pointer-events:none;
+    transition:transform .25s ease, opacity .25s ease;
+    z-index:50;
+  }
+  .toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="seal">TM</div>
+      <h1>Tópico Municipal</h1>
+      <p>Registro de atenciones</p>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" data-view="ficha" onclick="switchView('ficha')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+        Ficha
+      </button>
+      <button class="nav-btn" data-view="dashboard" onclick="switchView('dashboard')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+        Dashboard
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      Los datos se guardan de forma privada en tu sesión de Claude.
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- FICHA VIEW -->
+    <section class="view active" id="view-ficha">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Atención médica · Tópico municipal</p>
+          <h2>Nueva ficha de atención</h2>
+          <p class="sub">Completa los datos del paciente y los materiales/medicamentos utilizados.</p>
+        </div>
+      </div>
+
+      <form class="ficha-card" id="ficha-form">
+        <div class="ficha-top">
+          <span class="folio">Folio N° <b id="folio-preview">—</b></span>
+          <span class="folio" id="folio-fechahora"></span>
+        </div>
+        <div class="ficha-body">
+
+          <div class="field-group">
+            <h3>Fecha y hora</h3>
+            <div class="grid cols-2">
+              <div class="field mono">
+                <label for="f-fecha">Fecha</label>
+                <input type="date" id="f-fecha" required>
+              </div>
+              <div class="field mono">
+                <label for="f-hora">Hora</label>
+                <input type="time" id="f-hora" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <h3>Datos del paciente</h3>
+            <div class="grid">
+              <div class="field mono">
+                <label for="f-dni">DNI</label>
+                <input type="text" id="f-dni" maxlength="8" inputmode="numeric" placeholder="00000000" required>
+              </div>
+              <div class="field" style="grid-column:span 2;">
+                <label for="f-nombre">Nombres y apellidos</label>
+                <input type="text" id="f-nombre" placeholder="Ej. Juana Rosa Pérez López" required>
+              </div>
+              <div class="field mono">
+                <label for="f-telefono">Teléfono</label>
+                <input type="text" id="f-telefono" maxlength="9" inputmode="numeric" placeholder="900000000">
+              </div>
+              <div class="field" style="grid-column:span 4;">
+                <label for="f-domicilio">Domicilio</label>
+                <input type="text" id="f-domicilio" placeholder="Jr./Av./Calle, N°, referencia">
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <h3>Materiales y medicamentos</h3>
+            <table class="med-table" id="med-table">
+              <thead>
+                <tr>
+                  <th style="width:32%;">Medicamento / material</th>
+                  <th style="width:14%;">Cantidad</th>
+                  <th>Descripción / indicación</th>
+                  <th class="rm"></th>
+                </tr>
+              </thead>
+              <tbody id="med-tbody"></tbody>
+            </table>
+            <button type="button" class="add-row-btn" onclick="addMedRow()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Agregar medicamento
+            </button>
+          </div>
+
+          <div class="field-group" style="margin-bottom:4px;">
+            <h3>Personal de salud</h3>
+            <div class="grid cols-2">
+              <div class="field">
+                <label for="f-personal">Médico / personal que atiende</label>
+                <input type="text" id="f-personal" placeholder="Ej. Dr. Carlos Vargas Ruiz" required>
+              </div>
+              <div class="field">
+                <label for="f-cargo">Cargo / profesión</label>
+                <input type="text" id="f-cargo" placeholder="Ej. Médico general, Enfermera(o)">
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="ficha-actions">
+          <span class="hint" id="edit-hint">Registrando una nueva atención.</span>
+          <div style="display:flex;gap:10px;">
+            <button type="button" class="btn btn-ghost" onclick="resetForm()">Limpiar</button>
+            <button type="submit" class="btn btn-primary">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              Guardar ficha
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="list-card">
+        <div class="list-head">
+          <h3>Atenciones registradas (<span id="total-count">0</span>)</h3>
+          <div class="search-box">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="search-input" placeholder="Buscar por DNI o nombre..." oninput="renderList()">
+          </div>
+        </div>
+        <div id="list-wrap"></div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD VIEW -->
+    <section class="view" id="view-dashboard">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Panel general</p>
+          <h2>Dashboard de atenciones</h2>
+          <p class="sub">Resumen mensual de atenciones y consumo de medicamentos.</p>
+        </div>
+        <button class="btn btn-amber" onclick="downloadDatabase()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Descargar base de datos (Excel)
+        </button>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="label">Total de atenciones</div>
+          <div class="value" id="st-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Atenciones este mes</div>
+          <div class="value" id="st-mes">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Pacientes únicos</div>
+          <div class="value" id="st-pacientes">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Medicamento más usado</div>
+          <div class="value" id="st-medtop" style="font-size:18px;">—</div>
+        </div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-card">
+          <h4>Atenciones mensuales</h4>
+          <p class="cap">Cantidad de atenciones registradas por mes (últimos 12 meses)</p>
+          <div class="chart-wrap"><canvas id="chart-mensual"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h4>Medicamentos utilizados</h4>
+          <p class="cap">Top 8 por cantidad total dispensada</p>
+          <div class="chart-wrap"><canvas id="chart-med"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- STATE ---------------- */
+let records = [];
+let editingId = null;
+let medCounter = 0;
+let chartMensual = null, chartMed = null;
+const STORAGE_SHARED = false; // datos privados por usuario
+
+/* ---------------- INIT ---------------- */
+window.addEventListener('DOMContentLoaded', async () => {
+  setDefaultDateTime();
+  addMedRow();
+  await loadRecords();
+  renderList();
+  renderDashboard();
+});
+
+function setDefaultDateTime(){
+  const now = new Date();
+  document.getElementById('f-fecha').value = now.toISOString().slice(0,10);
+  document.getElementById('f-hora').value = now.toTimeString().slice(0,5);
+  document.getElementById('folio-fechahora').textContent = now.toLocaleDateString('es-PE',{day:'2-digit',month:'long',year:'numeric'});
+}
+
+/* ---------------- NAV ---------------- */
+function switchView(view){
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+  document.getElementById('view-ficha').classList.toggle('active', view === 'ficha');
+  document.getElementById('view-dashboard').classList.toggle('active', view === 'dashboard');
+  if(view === 'dashboard') renderDashboard();
+}
+
+/* ---------------- MED ROWS ---------------- */
+function addMedRow(data){
+  medCounter++;
+  const id = 'med-'+medCounter;
+  const tbody = document.getElementById('med-tbody');
+  const tr = document.createElement('tr');
+  tr.id = id;
+  tr.innerHTML = `
+    <td><input type="text" class="med-name" placeholder="Ej. Paracetamol 500mg" value="${data?.medicamento ? escapeHtml(data.medicamento) : ''}"></td>
+    <td class="qty"><input type="number" class="med-qty" min="0" step="1" placeholder="0" value="${data?.cantidad ?? ''}"></td>
+    <td><input type="text" class="med-desc" placeholder="Ej. 1 tableta cada 8 horas" value="${data?.descripcion ? escapeHtml(data.descripcion) : ''}"></td>
+    <td class="rm"><button type="button" class="icon-btn" onclick="removeMedRow('${id}')" title="Eliminar fila">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button></td>`;
+  tbody.appendChild(tr);
+}
+function removeMedRow(id){
+  const tbody = document.getElementById('med-tbody');
+  if(tbody.children.length <= 1){ showToast('Debe quedar al menos una fila de medicamento.'); return; }
+  document.getElementById(id).remove();
+}
+function collectMeds(){
+  const rows = document.querySelectorAll('#med-tbody tr');
+  const meds = [];
+  rows.forEach(r => {
+    const name = r.querySelector('.med-name').value.trim();
+    const qty = r.querySelector('.med-qty').value;
+    const desc = r.querySelector('.med-desc').value.trim();
+    if(name || qty || desc){
+      meds.push({ medicamento:name, cantidad: qty ? Number(qty) : 0, descripcion:desc });
+    }
+  });
+  return meds;
+}
+
+/* ---------------- FORM SUBMIT ---------------- */
+document.getElementById('ficha-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const dni = document.getElementById('f-dni').value.trim();
+  const nombre = document.getElementById('f-nombre').value.trim();
+  if(!/^\d{8}$/.test(dni)){ showToast('El DNI debe tener 8 dígitos.'); return; }
+  if(!nombre){ showToast('Ingresa el nombre del paciente.'); return; }
+
+  const record = {
+    id: editingId || ('at_' + Date.now() + '_' + Math.random().toString(36).slice(2,7)),
+    fecha: document.getElementById('f-fecha').value,
+    hora: document.getElementById('f-hora').value,
+    dni,
+    nombre,
+    telefono: document.getElementById('f-telefono').value.trim(),
+    domicilio: document.getElementById('f-domicilio').value.trim(),
+    medicamentos: collectMeds(),
+    personal: document.getElementById('f-personal').value.trim(),
+    cargo: document.getElementById('f-cargo').value.trim(),
+    creadoEn: editingId ? (records.find(r=>r.id===editingId)?.creadoEn || new Date().toISOString()) : new Date().toISOString()
+  };
+  if(!record.personal){ showToast('Ingresa el personal de salud que atiende.'); return; }
+
+  try{
+    await window.storage.set('atencion:' + record.id, JSON.stringify(record), STORAGE_SHARED);
+  }catch(err){
+    console.error(err);
+    showToast('Error al guardar. Intenta nuevamente.');
+    return;
+  }
+
+  const idx = records.findIndex(r => r.id === record.id);
+  if(idx >= 0) records[idx] = record; else records.unshift(record);
+
+  showToast(editingId ? 'Ficha actualizada correctamente.' : 'Ficha guardada correctamente.');
+  resetForm();
+  renderList();
+  renderDashboard();
+});
+
+function resetForm(){
+  editingId = null;
+  document.getElementById('ficha-form').reset();
+  document.getElementById('med-tbody').innerHTML = '';
+  setDefaultDateTime();
+  addMedRow();
+  document.getElementById('folio-preview').textContent = '—';
+  document.getElementById('edit-hint').textContent = 'Registrando una nueva atención.';
+}
+
+/* ---------------- LOAD ---------------- */
+async function loadRecords(){
+  try{
+    const list = await window.storage.list('atencion:', STORAGE_SHARED);
+    if(!list || !list.keys || list.keys.length === 0){ records = []; return; }
+    const results = await Promise.all(list.keys.map(async k => {
+      try{
+        const r = await window.storage.get(k, STORAGE_SHARED);
+        return r ? JSON.parse(r.value) : null;
+      }catch(e){ return null; }
+    }));
+    records = results.filter(Boolean).sort((a,b) => (b.fecha+b.hora).localeCompare(a.fecha+a.hora));
+  }catch(err){
+    console.error(err);
+    records = [];
+  }
+}
+
+/* ---------------- LIST RENDER ---------------- */
+function renderList(){
+  const wrap = document.getElementById('list-wrap');
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  const filtered = records.filter(r => !q || r.dni.includes(q) || r.nombre.toLowerCase().includes(q));
+  document.getElementById('total-count').textContent = records.length;
+
+  if(filtered.length === 0){
+    wrap.innerHTML = `<div class="empty-state">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>
+      <p>${records.length === 0 ? 'Aún no hay atenciones registradas. Completa la ficha para comenzar.' : 'No se encontraron resultados para tu búsqueda.'}</p>
+    </div>`;
+    return;
+  }
+
+  let rows = filtered.map(r => `
+    <tr>
+      <td>${formatDate(r.fecha)}<br><span class="pill">${r.hora}</span></td>
+      <td><span class="pill">${r.dni}</span></td>
+      <td>${escapeHtml(r.nombre)}</td>
+      <td>${r.medicamentos.length} ítem${r.medicamentos.length===1?'':'s'}</td>
+      <td>${escapeHtml(r.personal)}</td>
+      <td>
+        <div class="row-actions">
+          <button title="Editar" onclick="editRecord('${r.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg>
+          </button>
+          <button title="Descargar ficha (Excel)" onclick="downloadFicha('${r.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          </button>
+          <button title="Eliminar" class="danger" onclick="deleteRecord('${r.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  wrap.innerHTML = `<table class="data">
+    <thead><tr><th>Fecha / hora</th><th>DNI</th><th>Paciente</th><th>Medicamentos</th><th>Atendido por</th><th></th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function editRecord(id){
+  const r = records.find(x => x.id === id);
+  if(!r) return;
+  editingId = id;
+  document.getElementById('f-fecha').value = r.fecha;
+  document.getElementById('f-hora').value = r.hora;
+  document.getElementById('f-dni').value = r.dni;
+  document.getElementById('f-nombre').value = r.nombre;
+  document.getElementById('f-telefono').value = r.telefono;
+  document.getElementById('f-domicilio').value = r.domicilio;
+  document.getElementById('f-personal').value = r.personal;
+  document.getElementById('f-cargo').value = r.cargo || '';
+  document.getElementById('med-tbody').innerHTML = '';
+  (r.medicamentos.length ? r.medicamentos : [{}]).forEach(m => addMedRow(m));
+  document.getElementById('folio-preview').textContent = r.id.slice(-6).toUpperCase();
+  document.getElementById('edit-hint').textContent = 'Editando ficha existente — se sobrescribirá al guardar.';
+  switchView('ficha');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function deleteRecord(id){
+  if(!confirm('¿Eliminar esta ficha de atención? Esta acción no se puede deshacer.')) return;
+  try{
+    await window.storage.delete('atencion:' + id, STORAGE_SHARED);
+    records = records.filter(r => r.id !== id);
+    renderList();
+    renderDashboard();
+    showToast('Ficha eliminada.');
+  }catch(err){
+    console.error(err);
+    showToast('No se pudo eliminar. Intenta nuevamente.');
+  }
+}
+
+/* ---------------- DASHBOARD ---------------- */
+function renderDashboard(){
+  document.getElementById('st-total').textContent = records.length;
+
+  const now = new Date();
+  const curMonthKey = now.toISOString().slice(0,7);
+  const monthCount = records.filter(r => r.fecha.slice(0,7) === curMonthKey).length;
+  document.getElementById('st-mes').textContent = monthCount;
+
+  const uniquePatients = new Set(records.map(r => r.dni)).size;
+  document.getElementById('st-pacientes').textContent = uniquePatients;
+
+  const medTotals = {};
+  records.forEach(r => r.medicamentos.forEach(m => {
+    if(!m.medicamento) return;
+    medTotals[m.medicamento] = (medTotals[m.medicamento] || 0) + (Number(m.cantidad) || 0);
+  }));
+  const sortedMeds = Object.entries(medTotals).sort((a,b) => b[1]-a[1]);
+  document.getElementById('st-medtop').textContent = sortedMeds.length ? sortedMeds[0][0] : '—';
+
+  /* --- monthly chart: last 12 months --- */
+  const months = [];
+  for(let i=11;i>=0;i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    months.push(d.toISOString().slice(0,7));
+  }
+  const monthLabels = months.map(m => {
+    const [y,mo] = m.split('-');
+    return new Date(y,mo-1,1).toLocaleDateString('es-PE',{month:'short'}).replace('.','') + ' ' + y.slice(2);
+  });
+  const monthData = months.map(m => records.filter(r => r.fecha.slice(0,7) === m).length);
+
+  const ctx1 = document.getElementById('chart-mensual').getContext('2d');
+  if(chartMensual) chartMensual.destroy();
+  chartMensual = new Chart(ctx1, {
+    type:'bar',
+    data:{
+      labels: monthLabels,
+      datasets:[{
+        label:'Atenciones',
+        data: monthData,
+        backgroundColor:'#146C6E',
+        borderRadius:5,
+        maxBarThickness:34
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        y:{ beginAtZero:true, ticks:{precision:0, color:'#5B6864'}, grid:{color:'#EDE9DC'} },
+        x:{ ticks:{color:'#5B6864'}, grid:{display:false} }
+      }
+    }
+  });
+
+  /* --- medication chart: top 8 --- */
+  const top8 = sortedMeds.slice(0,8);
+  const ctx2 = document.getElementById('chart-med').getContext('2d');
+  if(chartMed) chartMed.destroy();
+  chartMed = new Chart(ctx2, {
+    type:'bar',
+    data:{
+      labels: top8.map(m => m[0]),
+      datasets:[{
+        label:'Cantidad',
+        data: top8.map(m => m[1]),
+        backgroundColor:'#C97F2E',
+        borderRadius:5,
+        maxBarThickness:22
+      }]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ beginAtZero:true, ticks:{precision:0, color:'#5B6864'}, grid:{color:'#EDE9DC'} },
+        y:{ ticks:{color:'#5B6864', font:{size:11.5}}, grid:{display:false} }
+      }
+    }
+  });
+
+  if(top8.length === 0){
+    document.getElementById('chart-med').parentElement.insertAdjacentHTML('beforeend', '');
+  }
+}
+
+/* ---------------- EXCEL: FICHA INDIVIDUAL ---------------- */
+async function downloadFicha(id){
+  const r = records.find(x => x.id === id);
+  if(!r) return;
+  showToast('Generando ficha en Excel...');
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'Tópico Municipal';
+  const ws = wb.addWorksheet('Ficha de atención', { pageSetup:{ paperSize:9, orientation:'portrait', fitToPage:true } });
+  ws.columns = [{width:20},{width:22},{width:20},{width:22}];
+
+  const teal = 'FF146C6E';
+  const tealDark = 'FF0E3B3E';
+  const paper = 'FFF6F3EA';
+  const line = 'FFDCD5C3';
+
+  function styleTitleRow(rowNum, text, merge){
+    ws.mergeCells(merge);
+    const cell = ws.getCell(rowNum, 1);
+    cell.value = text;
+    cell.font = { bold:true, size:13, color:{argb:'FFFFFFFF'}, name:'Calibri' };
+    cell.alignment = { vertical:'middle', horizontal:'left', indent:1 };
+    ws.getRow(rowNum).height = 26;
+    ws.getRow(rowNum).eachCell(c => { c.fill = { type:'pattern', pattern:'solid', fgColor:{argb:teal} }; });
+  }
+  function sectionRow(rowNum, text, merge){
+    ws.mergeCells(merge);
+    const cell = ws.getCell(rowNum, 1);
+    cell.value = text.toUpperCase();
+    cell.font = { bold:true, size:10.5, color:{argb:tealDark} };
+    cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:paper} };
+    cell.alignment = { vertical:'middle', indent:1 };
+    ws.getRow(rowNum).height = 20;
+  }
+  function labelValue(rowNum, label, value, colStart){
+    const lc = ws.getCell(rowNum, colStart);
+    lc.value = label;
+    lc.font = { bold:true, size:9.5, color:{argb:'FF5B6864'} };
+    lc.alignment = { vertical:'middle', indent:1 };
+    lc.fill = { type:'pattern', pattern:'solid', fgColor:{argb:'FFFCFBF7'} };
+    const vc = ws.getCell(rowNum, colStart+1);
+    vc.value = value || '—';
+    vc.font = { size:11 };
+    vc.alignment = { vertical:'middle', indent:1 };
+    [lc,vc].forEach(c => { c.border = { top:{style:'thin',color:{argb:line}}, bottom:{style:'thin',color:{argb:line}}, left:{style:'thin',color:{argb:line}}, right:{style:'thin',color:{argb:line}} }; });
+  }
+
+  let row = 1;
+  styleTitleRow(row, 'TÓPICO MUNICIPAL — FICHA DE ATENCIÓN', `A${row}:D${row}`); row++;
+  ws.getCell(row,1).value = `Folio N° ${r.id.slice(-6).toUpperCase()}`;
+  ws.getCell(row,1).font = { italic:true, size:9.5, color:{argb:'FF5B6864'} };
+  ws.mergeCells(`A${row}:D${row}`);
+  row += 1;
+  row++;
+
+  sectionRow(row, 'Fecha y hora', `A${row}:D${row}`); row++;
+  labelValue(row, 'Fecha', formatDate(r.fecha), 1);
+  labelValue(row, 'Hora', r.hora, 3); row++;
+
+  sectionRow(row, 'Datos del paciente', `A${row}:D${row}`); row++;
+  labelValue(row, 'DNI', r.dni, 1);
+  labelValue(row, 'Teléfono', r.telefono, 3); row++;
+  ws.mergeCells(`B${row}:D${row}`);
+  labelValue(row, 'Nombres y apellidos', r.nombre, 1); row++;
+  ws.mergeCells(`B${row}:D${row}`);
+  labelValue(row, 'Domicilio', r.domicilio, 1); row++;
+
+  sectionRow(row, 'Materiales y medicamentos', `A${row}:D${row}`); row++;
+  const th = ['Medicamento / material','Cantidad','Descripción / indicación'];
+  ws.mergeCells(`A${row}:A${row}`);
+  ws.mergeCells(`B${row}:B${row}`);
+  ws.mergeCells(`C${row}:D${row}`);
+  ['A','B','C'].forEach((col,i) => {
+    const c = ws.getCell(`${col}${row}`);
+    c.value = th[i];
+    c.font = { bold:true, size:9.5, color:{argb:'FFFFFFFF'} };
+    c.fill = { type:'pattern', pattern:'solid', fgColor:{argb:tealDark} };
+    c.alignment = { vertical:'middle', indent:1 };
+  });
+  row++;
+  const medList = r.medicamentos.length ? r.medicamentos : [{medicamento:'—',cantidad:'',descripcion:''}];
+  medList.forEach(m => {
+    ws.mergeCells(`C${row}:D${row}`);
+    const c1 = ws.getCell(`A${row}`); c1.value = m.medicamento || '—';
+    const c2 = ws.getCell(`B${row}`); c2.value = m.cantidad || 0; c2.alignment = {horizontal:'center'};
+    const c3 = ws.getCell(`C${row}`); c3.value = m.descripcion || '';
+    [c1,c2,c3].forEach(c => {
+      c.font = { size:10.5 };
+      c.border = { top:{style:'thin',color:{argb:line}}, bottom:{style:'thin',color:{argb:line}}, left:{style:'thin',color:{argb:line}}, right:{style:'thin',color:{argb:line}} };
+      c.alignment = { ...(c.alignment||{}), vertical:'middle', wrapText:true };
+    });
+    row++;
+  });
+
+  row++;
+  sectionRow(row, 'Personal de salud', `A${row}:D${row}`); row++;
+  labelValue(row, 'Atendido por', r.personal, 1);
+  labelValue(row, 'Cargo', r.cargo, 3); row++;
+
+  row += 2;
+  ws.mergeCells(`A${row}:B${row}`);
+  ws.getCell(`A${row}`).value = '_____________________________';
+  ws.getCell(`A${row}`).alignment = {horizontal:'center'};
+  ws.mergeCells(`C${row}:D${row}`);
+  ws.getCell(`C${row}`).value = '_____________________________';
+  ws.getCell(`C${row}`).alignment = {horizontal:'center'};
+  row++;
+  ws.mergeCells(`A${row}:B${row}`);
+  ws.getCell(`A${row}`).value = 'Firma del paciente / responsable';
+  ws.getCell(`A${row}`).font = { size:9, italic:true, color:{argb:'FF5B6864'} };
+  ws.getCell(`A${row}`).alignment = {horizontal:'center'};
+  ws.mergeCells(`C${row}:D${row}`);
+  ws.getCell(`C${row}`).value = 'Firma y sello del personal de salud';
+  ws.getCell(`C${row}`).font = { size:9, italic:true, color:{argb:'FF5B6864'} };
+  ws.getCell(`C${row}`).alignment = {horizontal:'center'};
+
+  const buffer = await wb.xlsx.writeBuffer();
+  downloadBlob(buffer, `Ficha_${r.dni}_${r.fecha}.xlsx`);
+  showToast('Ficha descargada.');
+}
+
+/* ---------------- EXCEL: BASE DE DATOS COMPLETA ---------------- */
+async function downloadDatabase(){
+  if(records.length === 0){ showToast('No hay atenciones registradas todavía.'); return; }
+  showToast('Generando base de datos en Excel...');
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'Tópico Municipal';
+
+  /* --- Hoja 1: Atenciones (resumen) --- */
+  const ws1 = wb.addWorksheet('Atenciones');
+  ws1.columns = [
+    { header:'Fecha', key:'fecha', width:12 },
+    { header:'Hora', key:'hora', width:9 },
+    { header:'DNI', key:'dni', width:11 },
+    { header:'Nombres y apellidos', key:'nombre', width:30 },
+    { header:'Teléfono', key:'telefono', width:12 },
+    { header:'Domicilio', key:'domicilio', width:28 },
+    { header:'N° medicamentos', key:'nmed', width:15 },
+    { header:'Medicamentos (resumen)', key:'medresumen', width:40 },
+    { header:'Atendido por', key:'personal', width:24 },
+    { header:'Cargo', key:'cargo', width:20 },
+  ];
+  styleHeaderRow(ws1);
+  records.forEach(r => {
+    ws1.addRow({
+      fecha: formatDate(r.fecha),
+      hora: r.hora,
+      dni: r.dni,
+      nombre: r.nombre,
+      telefono: r.telefono,
+      domicilio: r.domicilio,
+      nmed: r.medicamentos.length,
+      medresumen: r.medicamentos.map(m => `${m.medicamento} (${m.cantidad})`).join('; '),
+      personal: r.personal,
+      cargo: r.cargo
+    });
+  });
+  zebraStripe(ws1);
+
+  /* --- Hoja 2: Medicamentos (detalle) --- */
+  const ws2 = wb.addWorksheet('Medicamentos (detalle)');
+  ws2.columns = [
+    { header:'Fecha', key:'fecha', width:12 },
+    { header:'DNI paciente', key:'dni', width:13 },
+    { header:'Paciente', key:'nombre', width:28 },
+    { header:'Medicamento', key:'med', width:26 },
+    { header:'Cantidad', key:'cant', width:10 },
+    { header:'Descripción', key:'desc', width:34 },
+    { header:'Atendido por', key:'personal', width:24 },
+  ];
+  styleHeaderRow(ws2);
+  records.forEach(r => {
+    r.medicamentos.forEach(m => {
+      ws2.addRow({
+        fecha: formatDate(r.fecha),
+        dni: r.dni,
+        nombre: r.nombre,
+        med: m.medicamento,
+        cant: m.cantidad,
+        desc: m.descripcion,
+        personal: r.personal
+      });
+    });
+  });
+  zebraStripe(ws2);
+
+  /* --- Hoja 3: Resumen mensual --- */
+  const ws3 = wb.addWorksheet('Resumen mensual');
+  ws3.columns = [{ header:'Mes', key:'mes', width:16 }, { header:'Atenciones', key:'cant', width:14 }];
+  styleHeaderRow(ws3);
+  const monthTotals = {};
+  records.forEach(r => { const k = r.fecha.slice(0,7); monthTotals[k] = (monthTotals[k]||0)+1; });
+  Object.keys(monthTotals).sort().forEach(k => {
+    const [y,mo] = k.split('-');
+    const label = new Date(y,mo-1,1).toLocaleDateString('es-PE',{month:'long',year:'numeric'});
+    ws3.addRow({ mes: label.charAt(0).toUpperCase()+label.slice(1), cant: monthTotals[k] });
+  });
+  zebraStripe(ws3);
+
+  const buffer = await wb.xlsx.writeBuffer();
+  const today = new Date().toISOString().slice(0,10);
+  downloadBlob(buffer, `Base_datos_atenciones_${today}.xlsx`);
+  showToast('Base de datos descargada.');
+}
+
+function styleHeaderRow(ws){
+  const headerRow = ws.getRow(1);
+  headerRow.height = 22;
+  headerRow.eachCell(c => {
+    c.font = { bold:true, size:10.5, color:{argb:'FFFFFFFF'} };
+    c.fill = { type:'pattern', pattern:'solid', fgColor:{argb:'FF146C6E'} };
+    c.alignment = { vertical:'middle', horizontal:'left', indent:1 };
+    c.border = { bottom:{style:'thin',color:{argb:'FF0E3B3E'}} };
+  });
+  ws.views = [{ state:'frozen', ySplit:1 }];
+}
+function zebraStripe(ws){
+  for(let i=2;i<=ws.rowCount;i++){
+    const row = ws.getRow(i);
+    row.eachCell(c => {
+      c.font = { ...(c.font||{}), size:10.5 };
+      c.alignment = { ...(c.alignment||{}), vertical:'middle', indent:1 };
+      c.border = { bottom:{style:'thin',color:{argb:'FFDCD5C3'}} };
+      if(i % 2 === 0) c.fill = { type:'pattern', pattern:'solid', fgColor:{argb:'FFF6F3EA'} };
+    });
+  }
+}
+
+function downloadBlob(buffer, filename){
+  const blob = new Blob([buffer], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ---------------- UTILS ---------------- */
+function formatDate(iso){
+  if(!iso) return '—';
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+</script>
+</body>
+</html>
